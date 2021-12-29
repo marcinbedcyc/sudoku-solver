@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "sudoku-solver"
+version = "0.1.0"
+description = "Sudoku solver API"
+authors = ["Marcin Cyc <cmartindev@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+flake8 = "^4.0.1"
+fastapi = "^0.70.1"
+pytest = "^6.2.5"
+autopep8 = "^1.6.0"
+pytest-cov = "^3.0.0"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+testpaths = ['tests',]
+python_files = ['test_*.py', '*_test.py']
+addopts = '--cov=sudoku_solver --cov=fastapi_server --cov-report term-missing'
