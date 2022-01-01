@@ -21,8 +21,6 @@ def is_valid_column(grid, column_number):
     column = list(filter(
         lambda value: value != 0, [row[column_number] for row in grid]
     ))
-    print(column, column_number, set(column
-                                     ))
     return len(column) == len(set(column))
 
 

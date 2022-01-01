@@ -21,9 +21,17 @@
     ```
     poetry shell
     ```
+1. Run migrations
+    ```
+    cd fastapi_server && alembic upgrade head
+    ```
+1. Run server
+    ```
+    uvicorn fastapi_server.main:app --reload
+    ```
 ### Tests
 1. Repeat steps 1-4 from development section
-1. Run tests
+1. Ensure you are in root directory. Run tests
     ```
     pytest
     ```
