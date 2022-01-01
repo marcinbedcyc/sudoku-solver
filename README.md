@@ -29,6 +29,21 @@
     ```
     uvicorn fastapi_server.main:app --reload
     ```
+1. Add first user:
+    ```
+    curl -X 'POST' \
+        'http://127.0.0.1:8000/api/v1/users/' \
+        -H 'accept: application/json' \
+        -H 'Content-Type: application/json' \
+        -d '{
+        "first_name": "firstuser_name",
+        "last_name": "firstuser_last_name",
+        "is_active": true,
+        "is_superuser": true,
+        "email": "firstuser@example.com",
+        "password": "password"
+    }'
+    ```
 ### Tests
 1. Repeat steps 1-4 from development section
 1. Ensure you are in root directory. Run tests

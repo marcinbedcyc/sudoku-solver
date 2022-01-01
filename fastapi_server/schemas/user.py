@@ -19,7 +19,7 @@ class UserCreate(UserBase):
 
 
 # Properties to receive vi API on update
-class UpdateUser(UserBase):
+class UserUpdate(UserBase):
     password: Optional[str] = None
 
 
