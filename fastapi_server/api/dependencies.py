@@ -18,6 +18,66 @@ oauth2_schema = OAuth2PasswordBearer(
     tokenUrl=f'{settings.API_V1_STR}/login/access-token'
 )
 
+additional_responses = {
+    '401': {
+        'description': 'Unauthorized',
+        'content': {
+            'application/json': {
+                'examples': {
+                    'not_authenticated': {
+                        'summary': ' Not authenticated user',
+                        'value': {'detail': 'Not authenticated'}
+                    },
+                    'token_expired': {
+                        'summary': 'Expired token',
+                        'value': {'detail': 'Token has expired'}
+                    }
+                }
+            }
+        }
+    },
+    '403': {
+        'description': 'Forbidden access',
+        'content': {
+            'application/json': {
+                'examples': {
+                    'not_valid_credentials': {
+                        'summary': 'Not valid credentials',
+                        'value': {'detail': 'Could not validate credentials'}
+                    }
+                }
+            }
+        }
+    },
+    '404': {
+        'description': 'User from token not found',
+        'content': {
+            'application/json': {
+                'examples': {
+                    'not_found': {
+                        'summary': 'Current user not found',
+                        'value': {'detail': 'User from token not found'}
+                    }
+                }
+            }
+        }
+    }
+}
+
+not_active_response = {
+    'not_active': {
+        'summary': 'Not active user',
+        'value': {'detail': 'User is not active'}
+    }
+}
+
+not_active_superuser_response = {
+    'not_active_superuser': {
+        'summary': 'Not active superuser',
+        'value': {'detail': 'User is not active superuser'}
+    }
+}
+
 
 def get_db() -> Generator:
     try:
@@ -55,6 +115,31 @@ def get_current_user(
 
     # Raise an error if user does not exist.
     if not user:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, detail='User not found')
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='User from token not found'
+        )
+
+    return user
+
+
+def get_current_active_user(user: User = Depends(get_current_user)) -> User:
+    if not crud.user.is_active(user):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail='User is not active'
+        )
+
+    return user
+
+
+def get_current_active_superuser(
+    user: User = Depends(get_current_active_user)
+) -> User:
+    if not crud.user.is_superuser(user):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail='User is not superuser'
+        )
 
     return user
