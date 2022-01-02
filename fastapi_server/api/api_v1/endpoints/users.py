@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from fastapi_server import crud
 from fastapi_server.api.dependencies import get_db
-from fastapi_server.schemas.user import User, UserCreate
+from fastapi_server.schemas import User, UserCreate
 
 router = APIRouter()
 

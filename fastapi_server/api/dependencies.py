@@ -10,8 +10,8 @@ from fastapi_server import crud
 from fastapi_server.core.config import settings
 from fastapi_server.core.security import ALGORITHM
 from fastapi_server.db.session import SessionLocal
-from fastapi_server.models.user import User
-from fastapi_server.schemas.token import TokenPayload
+from fastapi_server.models import User
+from fastapi_server.schemas import TokenPayload
 
 
 oauth2_schema = OAuth2PasswordBearer(

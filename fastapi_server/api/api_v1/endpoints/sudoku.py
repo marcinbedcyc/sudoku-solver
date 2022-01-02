@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 from fastapi.params import Body, Depends
 
-from fastapi_server.models.user import User
-from fastapi_server.schemas.sudoku import SudokuIn, SudokuOut
+from fastapi_server.models import User
+from fastapi_server.schemas import SudokuIn, SudokuOut
 from fastapi_server.api.dependencies import get_current_user
 from sudoku_solver.solver import (
     is_valid_sudoku_grid,

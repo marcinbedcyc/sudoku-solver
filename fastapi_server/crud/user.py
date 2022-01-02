@@ -4,8 +4,8 @@ from sqlalchemy.orm import Session
 
 from fastapi_server.core.security import get_password_hash, verify_password
 from fastapi_server.crud.base import BaseCRUD
-from fastapi_server.models.user import User
-from fastapi_server.schemas.user import UserCreate, UserUpdate
+from fastapi_server.models import User
+from fastapi_server.schemas import UserCreate, UserUpdate
 
 
 class UserCRUD(BaseCRUD[User, UserCreate, UserUpdate]):
