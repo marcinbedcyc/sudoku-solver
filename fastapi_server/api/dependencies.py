@@ -38,10 +38,16 @@ def get_current_user(
         )
         token_data = TokenPayload(**payload)
     # Invalid credentials - cannot decode or load into object.
-    except (jwt.JWTError, ValidationError):
+    except (jwt.JWTError, ValidationError, jwt.JWTClaimsError):
         raise HTTPException(
             status.HTTP_403_FORBIDDEN,
             detail='Could not validate credentials'
+        )
+    # Token has expired
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail='Token has expired'
         )
 
     # Get user
