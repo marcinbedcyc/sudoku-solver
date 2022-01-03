@@ -100,6 +100,7 @@ def read_user_by_id(
 @router.post(
     '/',
     response_model=User,
+    status_code=status.HTTP_201_CREATED,
     responses={status.HTTP_400_BAD_REQUEST: bad_request_not_unique_email}
 )
 def create_user(
@@ -205,5 +206,5 @@ def remove_user(
             detail=f'User with id {user_id} not found'
         )
 
-    user_db = crud.user.remove(db, user_db)
+    user_db = crud.user.remove(db, id=user_id)
     return user_db
