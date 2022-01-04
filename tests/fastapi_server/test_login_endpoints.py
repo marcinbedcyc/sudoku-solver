@@ -53,8 +53,9 @@ def test_login_endpoints(
     (TOKEN_USER_0, status.HTTP_200_OK, USERS[0]),
     (TOKEN_USER_1, status.HTTP_200_OK, USERS[1]),
     (TOKEN_USER_2, status.HTTP_200_OK, USERS[2]),
-    (WRONG_TOKEN, status.HTTP_404_NOT_FOUND, USERS[0]),
-    (EXPIRED_TOKEN_0, status.HTTP_401_UNAUTHORIZED, USERS[0]),
+    (WRONG_TOKEN, status.HTTP_404_NOT_FOUND, None),
+    (EXPIRED_TOKEN_0, status.HTTP_401_UNAUTHORIZED, None),
+    ('no_token_data', status.HTTP_403_FORBIDDEN, None),
 ])
 def test_login_token_test(
     users_data,

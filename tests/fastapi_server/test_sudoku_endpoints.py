@@ -73,6 +73,16 @@ from tests.test_data.users import (
         status.HTTP_403_FORBIDDEN,
         {'detail': 'User is not active'}
     ),
+    # No data in token
+    (
+        'no_token_data',
+        (
+            '.7846.39.6.47..1.....9.5..6.21.3748.8...9.2..3.7...6....624..7.75'
+            '........3....82.'
+        ),
+        status.HTTP_403_FORBIDDEN,
+        {'detail': 'Could not validate credentials'}
+    ),
     # Expired token
     (
         EXPIRED_TOKEN_0,

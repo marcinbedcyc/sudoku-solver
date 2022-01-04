@@ -2,8 +2,8 @@ import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
 
+from fastapi_server import crud
 from fastapi_server.core.config import settings
-from fastapi_server.db.base import User
 from tests.conftest import test_db
 from tests.test_data.users import (
     EXPIRED_TOKEN_0, TOKEN_USER_0, TOKEN_USER_1, TOKEN_USER_2, WRONG_TOKEN,
@@ -18,6 +18,7 @@ from tests.test_data.users import (
     (EXPIRED_TOKEN_0, status.HTTP_401_UNAUTHORIZED, 0, 100, None),
     (WRONG_TOKEN, status.HTTP_404_NOT_FOUND, 0, 100, None),
     (TOKEN_USER_1, status.HTTP_403_FORBIDDEN, 0, 100, None),
+    ('no_token', status.HTTP_403_FORBIDDEN, 0, 100, None),
 ])
 def test_get_users(
     users_data,
@@ -45,6 +46,7 @@ def test_get_users(
     (EXPIRED_TOKEN_0, status.HTTP_401_UNAUTHORIZED, 1, None),
     (WRONG_TOKEN, status.HTTP_404_NOT_FOUND, 1, None),
     (TOKEN_USER_1, status.HTTP_403_FORBIDDEN, 1, None),
+    ('no_token', status.HTTP_403_FORBIDDEN, 1, None),
 ])
 def test_get_user_by_id(
     users_data,
@@ -138,7 +140,9 @@ def test_create_user(
     client: TestClient,
     user_json_data, status_code, error_detail
 ):
-    users_count_before = len(USERS)
+    with test_db() as db:
+        users_count_before = len(crud.user.get_multi(db))
+
     response = client.post(
         url=f'{settings.API_V1_STR}/users',
         json=user_json_data,
@@ -168,7 +172,10 @@ def test_create_user(
             headers={'Authorization': f'bearer {TOKEN_USER_0}'}
         )
         assert response.status_code == status.HTTP_200_OK
-        assert len(response.json()) == users_count_before + 1
+
+        with test_db() as db:
+            users_count = len(crud.user.get_multi(db))
+            assert users_count == users_count_before + 1
 
     else:
         assert response_json['detail'] == error_detail
@@ -176,6 +183,7 @@ def test_create_user(
 
 @pytest.mark.parametrize('token, id, user_data_json, http_status, detail', [
     (TOKEN_USER_2, 1, {'first_name': 'new_name'}, status.HTTP_200_OK, None),
+    (TOKEN_USER_2, 1, {'password': 'new_password'}, status.HTTP_200_OK, None),
     (
         TOKEN_USER_2,
         1,
@@ -221,6 +229,13 @@ def test_create_user(
         status.HTTP_403_FORBIDDEN,
         'User is not active'
     ),
+    (
+        'no_token',
+        1,
+        {'first_name': 'new_name'},
+        status.HTTP_403_FORBIDDEN,
+        'Could not validate credentials'
+    ),
 ])
 def test_update_user(
     users_data,
@@ -235,8 +250,12 @@ def test_update_user(
 
     response_json = response.json()
     if http_status == status.HTTP_200_OK:
-        # TODO: More preciously data check
-        assert response_json['first_name'] == user_data_json['first_name']
+        assert not response_json.get('password')
+        assert not response_json.get('hashed_password')
+
+        for key, value in user_data_json.items():
+            if key != 'password':
+                assert response_json[key] == value
     else:
         assert response_json['detail'] == detail
 
@@ -253,6 +272,12 @@ def test_update_user(
     (WRONG_TOKEN, 1, status.HTTP_404_NOT_FOUND, 'User from token not found'),
     (TOKEN_USER_0, 2, status.HTTP_403_FORBIDDEN, 'User is not superuser'),
     (TOKEN_USER_1, 1, status.HTTP_403_FORBIDDEN, 'User is not active'),
+    (
+        'no_token_data',
+        1,
+        status.HTTP_403_FORBIDDEN,
+        'Could not validate credentials'
+    ),
 ])
 def test_remove_user(
     users_data,
@@ -269,7 +294,7 @@ def test_remove_user(
 
     if http_status == status.HTTP_200_OK:
         with test_db() as db:
-            assert users_count_before == len(db.query(User).all()) + 1
+            assert users_count_before == len(crud.user.get_multi(db)) + 1
 
     else:
         assert response.json()['detail'] == detail
