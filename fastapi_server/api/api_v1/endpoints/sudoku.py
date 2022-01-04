@@ -3,7 +3,7 @@ from fastapi.params import Body, Depends
 
 from fastapi_server.models import User
 from fastapi_server.schemas import SudokuIn, SudokuOut
-from fastapi_server.api.dependencies import get_current_user
+from fastapi_server.api.dependencies import get_current_active_user
 from sudoku_solver.solver import (
     is_valid_sudoku_grid,
     solve_sudoku,
@@ -22,7 +22,7 @@ router = APIRouter()
     description='Solve the sudoku if it is possible and return the solution.',
 )
 def solve(
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_active_user),
     sudoku_in: SudokuIn = Body(
         ...,
         examples={

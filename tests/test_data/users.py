@@ -37,5 +37,5 @@ NEVER_EXPIRES_MINUTES = timedelta(minutes=60 * 24 * 365 * 100)
 TOKEN_USER_0 = create_access_token(USERS[0]['id'], NEVER_EXPIRES_MINUTES)
 TOKEN_USER_1 = create_access_token(USERS[1]['id'], NEVER_EXPIRES_MINUTES)
 TOKEN_USER_2 = create_access_token(USERS[2]['id'], NEVER_EXPIRES_MINUTES)
-WRONG_TOKEN = create_access_token(-1, timedelta(minutes=10))
+WRONG_TOKEN = create_access_token(-1)  # Default expiration time
 EXPIRED_TOKEN_0 = create_access_token(USERS[0]['id'], timedelta(minutes=-20))

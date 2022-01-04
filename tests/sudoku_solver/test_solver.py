@@ -13,7 +13,7 @@ from sudoku_solver.solver import (
     InvalidSudokuString,
     InvalidSudokuGrid
 )
-from tests.fixtures_and_data.sudoku_grids import (
+from tests.test_data.sudoku_grids import (
     ones, zeros, ones_3x9, ones_9x5, valid_rows, valid_cols, valid_boxes,
     grid1, grid2, grid2_result, difficult_case_grid, difficult_case_grid_result
 )
